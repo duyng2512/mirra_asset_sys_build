@@ -1,0 +1,75 @@
+***************************************************************************************
+* This document contains a list of changes for different modules and options. The     *
+* availability of a change is determined by the Customer's specific list of licenses. *
+* If you have any questions, please contact the BRM (Business Relation Manager).      *
+***************************************************************************************
+
+Scheduler 2.0.2-1705 released on 14/07/2021
+=========================================
+change types:
+ ! added new feature
+ % changed feature
+ # fixed bug
+ ^ new task
+ * mandatory update
+ $ documentation
+ @ information note
+
+Scheduler 2.0
+=========================================
+Notes
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  [2.0.2-1705]
+    % I1701271716	[Scheduler] [SCH-568] An error message under Job process log isn't truncated if a java-pipe menu item throws an exception
+    Scheduler
+    % OWS-28938	[Scheduler] [SCH-564] New ability to execute the st. procedure glob.reget_base_parms before each job to set correct business parameters. Set config parameter use_bpm_task_wrapper=true to switch on the mode.
+      SSF
+       Impact SSF Requirement: No Impact
+  [2.0.2-1666]
+    % SCH-542	[Scheduler] Introduced a new high availability 2-node configuration for Scheduler (under additional license).
+      SSF
+       Impact SSF Requirement: No Impact
+
+Scheduler 1.2
+=========================================
+*Upgrade Notes on Impact changes* (attention, these changes may affect your data, please read carefully)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  [1.2.95-1524]
+    sysdb
+    % SYSTEM-515	[System]
+        UPGRADE NOTES: The default value of callStartTransaction is set to false.
+          This parameter describes whether a special database procedure, "sy_online.start_transaction", should be executed on a new captured connection.
+          If previous default behavior is required, this parameter should be set to true.
+Notes
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  [1.2.96-1603]
+    % OWS-33087	[Scheduler] [SCH-544] Changed the default state for Autotrace on Connection Pools to 'switched off'.
+  [1.2.95-1524]
+    % OWS-27608	[Scheduler] [SCH-539] Added Oracle DB connection ID into the error message "Can't register Job Call for a command ".
+    sysdb
+    % SYSTEM-421	[System] Changed behaviour of the monitor.monitors parameter. If set to "0" in connection pool configuration, it will disable diagnostics for routing connection pool used in HA and Distributed Processing.
+    % SYSTEM-559	[System] Added logging of used database on connection capture:
+      2020-03-26 14:07:28.228 L [.WsrAdapter_MQ_1]<0120086000094V0> Raw connection context got: C_PRIMARY2 (1978801463), pool=WAY4DB, group=PRIMARY, url=jdbc:oracle:thin:@vmw4-russabrs-dp-db01-48.cdt.spb.openwaygroup.com:1521/prim
+      
+      By default, this is logged at 60 log level.
+      By setting captureConnectionLogLevel in WAY4DB.s.xml it is can be logged at another level:
+          <property name="captureConnectionLogLevel" value="35"/>
+    # SYSTEM-406	[System] Fixed issue with broadcasting the DB routing table for "High Availability" functionality.
+    # SYSTEM-452	[System] Fixed HA routing problem for Transaction Switch SAF Adapter.
+    # I1904153308	[System] [SYSTEM-482] Fixed haStat.groovy script location.
+    # OWS-24096	[System] [SYSTEM-591] Fixed NPE on SECONDARY-routing connection to DB.
+    # SYSTEM-609	[System] Changed behavior in case of commit timeout. Now it's not repeated and is cancelled instead.
+  [1.2.94-1512]
+    # OWS-25250	[Scheduler] [SCH-532] Enhanced logging for Scheduler jobs processing.
+  [1.2.93-1497]
+    bpmservice
+    % SYSTEM-581	[System] Added diagnostics for slow task file load in BPM service.
+  [1.2.92-1467]
+    ! SCH-529	[Scheduler] Introduced a new "decimal_separator" option for the "Execute SQL" BPM step. This option sets a character used for numbers in export.
+    # SCH-528	[Scheduler] Corrected behavior which led to "java.lang.NullPointerException at com.openwaygroup.way4scheduler.engine.util.DateTimeUtil.max" when "Interval Calculated = From Planned".
+  [1.2.91-1450]
+    % SCH-524	[Scheduler] Supported new parameters in WAY4 Scheduler: to set a timeout to wait for a new DB connection and to set the minimum number of DB connections.
+    # OWS-19428	[Scheduler] [SCH-526] Fixed issue with Log Cleaner when files were deleted from subdirectories and not deleted from the log directory itself.
+  [1.2.90-1437]
+    # SCH-512	[Scheduler] Corrected behavior when WAY4 Scheduler stopped sending email after a network interruption between the application and the mail server.
+

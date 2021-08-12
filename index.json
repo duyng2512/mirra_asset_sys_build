@@ -1,0 +1,10 @@
+{
+    "Guide Link": {
+        "Card": "https://wiki/display/WAY4TUTORIAL/8400+CI01.+Task+Overview+for+bare+IVM",
+        "AppServer": "https://wiki/display/WAY4TUTORIAL/3727+AS+Practice.+Application+Server+Installation+on+bare+stand",
+        "Webv3": "https://wiki/display/WAY4TUTORIAL/6594+WI+Practice.+WAY4Web+3.0+Quick+Installation+in+Windows+Environment",
+        "SMSB": "https://wiki/display/WAY4TUTORIAL/8782+QI+W4U+SMS+Banking+Quick+Installation",
+        "Scheduler":"https://wiki/display/WAY4TUTORIAL/9328+SC01.+WAY4+Scheduler+installation+and+configuration",
+        "Transaction Switch": "https://wiki/display/W4TEN/00+Transaction+Switch+Installation"
+    }
+}

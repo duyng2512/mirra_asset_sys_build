@@ -1,0 +1,204 @@
+***************************************************************************************
+* This document contains a list of changes for different modules and options. The     *
+* availability of a change is determined by the Customer's specific list of licenses. *
+* If you have any questions, please contact the BRM (Business Relation Manager).      *
+***************************************************************************************
+
+SMS Banking 2.8.972 released on 14/07/2021
+=========================================
+change types:
+ ! added new feature
+ % changed feature
+ # fixed bug
+ ^ new task
+ * mandatory update
+ $ documentation
+ @ information note
+
+SMS Banking 2.8
+=========================================
+*Upgrade Notes on Impact changes* (attention, these changes may affect your data, please read carefully)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  [2.8.748]
+    Interactive Channels API
+    ! ICAPI-698	[Interactive Channels API]
+        Personalized devices and one-time password list receipt management is supported. It is now possible to see the list of personalized mobile devices and to unenroll a device or to disable an existing one-time password receipt.
+        UPGRADE NOTES: It needs of AuthServer version 2.7.27 and higher
+    % ICAPI-483	[Interactive Channels API]
+        Generating and canceling codes for cash by code has been migrated to TransactionSwitch.
+        UPGRADE NOTES: There is impact problem if CashByCode is already configured and working.
+          The parameter cash_by_code_on_ts was added for backwards compatibility.
+          If cash_by_code_on_ts=false then all CashByCode operations will work through the CustomerProfile as before.
+          If cash_by_code_on_ts=true then all CashByCode operations will be performed via TransactionSwitch. In this case requires TransactionSwitch v1.1.202 or greater.
+          By default cash_by_code_on_ts=true
+    % I1702130185	[Interactive Channels API] [ICAPI-539]
+        Now IC API is able to transfer "as is" error messages coming from an external system. 
+        To define the set of response codes for which error messages should be transferred, use the new parameter "error_codes_with_custom_messages".
+        UPGRADE NOTES: Error messages from external systems wan't be passed in the UI by default anymore. This change was made to prevent internal system error messages from being shown to the end user. Thus it is insecure.
+          All error codes that should be shown to a client must be explicitly declared in the "error_codes_with_custom_messages" property. Also be aware that http response status for these errors has changed from code 500 to 400.
+    % ICAPI-545	[Interactive Channels API]
+        Added enrolment from various messengers (Facebook, Viber and Line).
+        UPGRADE NOTES: AuthServer 2.7.17 and higher is required when using any of the messenger integration features (telegramIntegration, viberIntegration, lineIntegration, facebookIntegration).
+    % ICAPI-587	[Interactive Channels API]
+        Protection against brute force has been added for transfer by phone number.
+        UPGRADE NOTES: If the transfer by phone number feature is present, the following parameters must be set:
+          1. contract_by_phone_allowed_trying - the maximum allowed number of attempts to enter an invalid phone number (default value: 10).
+          2. contract_by_phone_allowed_trying_period - period for counting attempts to enter an invalid phone number (default value: PT1H).
+          3. contract_by_phone_locking_period - the blocking period if the number of attempts to enter the wrong phone number exceeds the value in the contract_by_phone_allowed_trying parameter (default value: PT1H).
+          4. contract_by_phone_reset_after_success_trying - indicates the counter of failed attempts will be reset after the correct phone number has been entered (default value: true).
+    % ICAPI-602	[Interactive Channels API]
+        Transfer to bank client by card number can now be configured to show the beneficiary client's name.
+        UPGRADE NOTES: Protection against brute force was extended to new resource.
+          Therefore properties related to this protection have been renamed. 
+          If the transfer by phone number feature is present, the following parameters must be renamed: 
+          1. contract_by_phone_allowed_trying to incorrect_lookup_allowed_trying. 
+          2. contract_by_phone_allowed_trying_period to incorrect_lookup_allowed_trying_period. 
+          3. contract_by_phone_locking_period to incorrect_lookup_locking_period. 
+          4. contract_by_phone_reset_after_success_trying to incorrect_lookup_reset_after_success_trying.
+    % ICAPI-631	[Interactive Channels API]
+        Added the ability to send events to cards if a client changes the language in Web Banking/Mobile Web Banking application.
+        UPGRADE NOTES: Property login_notifications_concurrency_level to ows-application.properties file must be renamed to notifications_concurrency_level  if this property has existed. Set of transaction condition attributes is changed for MWB application. WEB attribute is removed, TBAPPL, MNET attributes are added.
+    % I1707275654	[Interactive Channels API] [ICAPI-694]
+        Mobile application version: OW-Client-Version header is now mandatory on session requests if the min_client_version parameter is set. If the header is empty and the parameter is set, an upgrade required error is generated. Thus all users with earlier versions of applications (earlier than 1.5.454 or earlier than 1.4.1121) can no longer use them without upgrade to the latest version.
+        UPGRADE NOTES: Mobile application version: if the min_client_version parameter is set, be aware that all users with earlier versions of applications (earlier than 1.5.454 or earlier than 1.4.1121) can no longer use them without upgrade to the latest version.
+    % ICAPI-761	[Interactive Channels API]
+        Added visibility of contract number and operation description in pdf receipts for offline operations.
+        UPGRADE NOTES: Translation for receipt_contract key should be added in server i18n files.
+          This is required to support user-friendly history representation in pdf receipts generated for offline payments.
+    # I1702225647	[Interactive Channels API] [ICAPI-546]
+        Usage limiter switch "dateFrom" is filled correctly for Applications R1. Make sure the w4c_advapp_r2  parameter is set to the same value in both the CP Backend application and WB/MWB applications.
+        UPGRADE NOTES: Make sure the w4c_advapp_r2  parameter is set to the same value in both the CP Backend application and WB/MWB applications.
+    # ICAPI-838	[Interactive Channels API]
+        Added a new status with the "expired" value.
+        This status is returned for cash code operations when cash code is expired.
+        UPGRADE NOTES: The historical entry status was FAILED when td_cons_doc.return_code is not zero and AUTH_RECORD.CREDIT_STATUS is 'C'.
+          Now for such operation the status will be EXPIRED.
+Notes
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  [2.8.963]
+    % SMSB-456	[SMS banking] Added a new parameter for specifying the encoding for outbound messages with Latin characters only (ASCII). The default value (0) stands for "GSM 7 bit default alphabet", which is not always suitable. Use the following parameter to switch to ISO-8859-1:
+      smppadapter_<adapter_name>_encoding_for_outbound_ascii7=3
+  [2.8.871]
+    # SMSB-442	[SMS banking] Updated WAY4 Cards connection pool to support HA installations.
+  [2.8.850]
+    % SMSB-436	[SMS banking] Fixed WAY4 Cards connection pool.
+    # SMSB-440	[SMS banking] Fixed handling of the delivery channel for outgoing messages (SMS/Telegram) queued for a long time before being sent.
+  [2.8.787]
+    % SMSB-427	[SMS banking] Added Java vendor and compatibility information to logs.
+  [2.8.748]
+    % SMSB-410	[SMS banking] Updated Oracle JDBC drivers to version 12.2.0.1.
+    % SMSB-422	[SMS banking] Added a limit for the number of XML entity expansions: only one is permitted by default. This prevents the Billion Laugh Attack (also known as the XML Bomb). If multiple entity expansion is required it can be enabled by specifying the system property jdk.xml.entityExpansionLimit=64000.
+    Interactive Channels API
+    ! ICAPI-331	[Interactive Channels API] All licensed functionality has been introduced as a separate feature. Features configuration is moved to backend into the features.json file. UI features configuration (appConfig.coffee, feature.coffee) is no longer applicable. The features.json file in the distribution is filled according to purchased licenses and features that have been implemented. 
+      This configuration file is signed and cannot be changed independently by the customer. In order to change the file, the customer should contact WAY4 Support.
+    ! ICAPI-533	[Interactive Channels API] Integration with external billers via the MBilling protocol has been implemented. External biller descriptions can now be requested online from a biller to make a billing payment for this biller. Transaction Switch is required for this functionality. 
+      Functionality is implemented as a new externalBillerDescriptions feature.
+    ! ICAPI-600	[Interactive Channels API] Added the ability to get additional information about merchants for history records. Functionality is implemented as a new merchantList feature.
+    ! ICAPI-646	[Interactive Channels API] Multi-currency card:
+      Cases when money was transferred from different multi-currency card accounts in one transaction will now be correctly displayed in history.
+    ! ICAPI-698	[Interactive Channels API] Personalized devices and one-time password list receipt management is supported. It is now possible to see the list of personalized mobile devices and to unenroll a device or to disable an existing one-time password receipt.
+    ! ICAPI-700	[Interactive Channels API] Added the ability to get information about the last login actions. Functionality is implemented as a new loginHistory feature.
+    ! ICAPI-724	[Interactive Channels API] Supported display of information about instalments. Instalment limits, active and closed instalments are shown for cards that support instalments. Instalment information is shown in the history for a transaction with a linked instalment plan.
+    ! ICAPI-740	[Interactive Channels API] Added capture of OTP from SMS messages to the server side. Functionality is implemented as a new captureOtpSms feature.
+    ! ICAPI-805	[Interactive Channels API] Supported e-mail statement enrolment in back-end as a new feature - "statementSubscription".
+    % ICAPI-483	[Interactive Channels API] Generating and canceling codes for cash by code has been migrated to TransactionSwitch.
+    % I1702130185	[Interactive Channels API] [ICAPI-539] Now IC API is able to transfer "as is" error messages coming from an external system. 
+      To define the set of response codes for which error messages should be transferred, use the new parameter "error_codes_with_custom_messages".
+    % ICAPI-543	[Interactive Channels API] Added the ability to use Send-to-Friend functionality from various messengers (Facebook, Viber, and Line).
+    % ICAPI-545	[Interactive Channels API] Added enrolment from various messengers (Facebook, Viber and Line).
+    % ICAPI-554	[Interactive Channels API] Added logging of device ID. If the device has an incorrect longitude or latitude format, then the ID of this device is written to the log file.
+    % ICAPI-568	[Interactive Channels API] Locations of ATMs and branches can be loaded from files in KMZ format. When the WEB-INF/config/work/locations.kmz file is present, it overrides other sources of service point data.
+    % ICAPI-583	[Interactive Channels API] The dispute_period parameter has been added.
+      This parameter contains the period for which disputes are loaded.
+      The default value is one year.
+    % ICAPI-587	[Interactive Channels API] Protection against brute force has been added for transfer by phone number.
+    % ICAPI-594	[Interactive Channels API] Added the ability to manage (enable/disable) purchased features using the enabled-features.json configuration file.
+    % ICAPI-599	[Interactive Channels API] A separate license has been created for CVV2 Recovery. This is now a separate feature related to the Virtual Cards feature.
+    % ICAPI-602	[Interactive Channels API] Transfer to bank client by card number can now be configured to show the beneficiary client's name.
+    % ICAPI-605	[Interactive Channels API] Integration with external billers: field order for biller payments has been changed.
+    % ICAPI-613	[Interactive Channels API] Showing currency rates has been supported.
+    % ICAPI-614	[Interactive Channels API] Added the ability to use special masked parameters (last 4 digits of the target or the source) in OTP SMS template of payment services.
+    % ICAPI-616	[Interactive Channels API] Added support of enumeration fields for integration with external billers via the MBilling protocol.
+    % ICAPI-620	[Interactive Channels API] A new "resources" directory for client resources has been supported. This directory is preserved during application update.
+    % ICAPI-621	[Cash By Code] Parameter for CashCode lifetime has been added in ows-application.properties.
+    % ICAPI-622	[Interactive Channels API] Added the ability to use specific OTP SMS templates of services for integration with external billers via the MBilling protocol.
+    % ICAPI-623	[Interactive Channels API] Integration with external billers: mbilling error prefixes (like ERR_TARGET) have been removed from messages shown to clients.
+    % ICAPI-631	[Interactive Channels API] Added the ability to send events to cards if a client changes the language in Web Banking/Mobile Web Banking application.
+    % ICAPI-661	[Interactive Channels API] Indicator of barcode scanner at an ATM has been added in atms.json.
+    % ICAPI-667	[Interactive Channels API] Multi-currency card feature.
+      Default implementation of opt_ic_api.IS_ADDITIONAL(...) function: all contracts with the "Supplementary Card" role will be marked as additional.
+    % ICAPI-691	[Interactive Channels API] Settings for connection to hsm-gateway have been added for Apple Pay In-app provisioning.
+    % I1707275654	[Interactive Channels API] [ICAPI-694] Mobile application version: OW-Client-Version header is now mandatory on session requests if the min_client_version parameter is set. If the header is empty and the parameter is set, an upgrade required error is generated. Thus all users with earlier versions of applications (earlier than 1.5.454 or earlier than 1.4.1121) can no longer use them without upgrade to the latest version.
+    % ICAPI-697	[Interactive Channels API] Added new feature of subscription to invoices from biller system.
+    % ICAPI-702	[Interactive Channels API] Supported provision of IPS name and Bank name by card number prefix:
+      Now IC-API is able to provide IPS and bank names to front-end applications.
+    % ICAPI-713	[Interactive Channels API] Supported issuing a single currency virtual card for a multi-currency card.
+    % ICAPI-720	[Interactive Channels API] Filtering by regions for external biller payments has been supported.
+    % ICAPI-725	[Interactive Channels API] Added "egw_request_sign" and "egw_response_sign" parameters to override standard lists of fields used for the signature generation for request and response to Ecommerce Gateway. These parameters should be synchronized and set according to Chk_mac and Gen_mac parameters in the Ecommerce Gateway configuration for the corresponding terminal.
+    % ICAPI-754	[Interactive Channels API] Added protection (limiting attempts to try to execute a service per unit of time) against card number brute force attacks during service execution. 
+      Protection is only applicable for P2P services where the destination is the card number.
+    % ICAPI-759	[Interactive Channels API] Supported selection of all available currencies for transfers between own cards when a multi-currency card is the beneficiary.
+    % ICAPI-761	[Interactive Channels API] Added visibility of contract number and operation description in pdf receipts for offline operations.
+    % ICAPI-762	[Interactive Channels API] Added the option to make online UFX payments using different PaymentReceiverCode values that are dynamically received through the OpenWay mBilling XML protocol from an external billing providers aggregator.
+    % ICAPI-765	[Interactive Channels API] Set the default time to live for cache of external biller menu to 86400 seconds.
+    % ICAPI-794	[Interactive Channels API] Added new parameters. Oversized static handbooks cannot be requested without correct filtering parameters. This restriction will be available only for handbooks specified in the oversized_static_handbooks configuration property in the ows-application.properties configuration file.
+    % ICAPI-810	[Interactive Channels API] Added functionality to hide the native menu item for an intra-card transfer if the client is not marked as a multi-currency card's owner. A client is marked when the ICAPI_MCC_OWNER parameter is set to "Y" in the OPT_IC_CLIENT_EXTRA_RS procedure. The default value is "N".
+    % ICAPI-814	[Interactive Channels API] Added support for the Offers links that lead to the REST services. Offers links configuration can be accessed through the following path: "OpenWay\Customer Profile\Configuration Setup\Marketing\Offers\Offers->[Offer]->[Service]".
+    % I1712183461	[Interactive Channels API] [ICAPI-824] Optimized reading of contract subscriptions.
+      This affects transaction windows, statement subscriptions, old SMS notifications and linking third-party cards.
+    % ICAPI-832	[Interactive Channels API] Added the ability to set the OTP SMS template for creating and editing automatic payments. For this template, the sections "create-recurrent", "'create-threshold", "update-recurrent" and "update-templug" have been added to confirmation.json. In these sections, only the otpSmsTemplate parameter is used. Fields can be specified with a one-time password (PW), date and time (DATETIME) and operation name (SERVICE) in the otpSmsTemplate.
+      If otpSmsTemplate is not set for an operation, it will be taken from the service, as previously.
+    % I1801114210	[Interactive Channels API] [ICAPI-841] Added a new service rule - ADDENDUM. By default, this rule is enabled for PAYMENT and TRANSFER services. An addendum with attribute values is stored for a document. Now it is possible to set the value of the rule to "N" to avoid addendum creation.
+    % ICAPI-847	[Interactive Channels API] Added ic-api support of contracts cache.
+    % ICAPI-926	[Interactive Channels API] Added the ability to show the "Last, first, middle name" (fio) field in transaction history on a receipt or in a PDF file.
+    # I1702225647	[Interactive Channels API] [ICAPI-546] Usage limiter switch "dateFrom" is filled correctly for Applications R1. Make sure the w4c_advapp_r2  parameter is set to the same value in both the CP Backend application and WB/MWB applications.
+    # I1704043108	[Interactive Channels API] [ICAPI-570] Fixed issue with contract filtering by CONTRACT_NUMBER.
+    # ICAPI-573	[Interactive Channels API] The OTP_MMA additional authentication method is now available only if the enrollMobile or oneTimePasswords feature is enabled.
+    # ICAPI-597	[Interactive Channels API] Integration with external billers: bug when "Mandatory", "Editable" and "DefaultValue" biller fields were ignored has been fixed.
+    # ICAPI-608	[Interactive Channels API] Invoice list caching has been disabled. Now the current invoice list will always be requested from the biller.
+    # I1706098427	[Interactive Channels API] [ICAPI-627] Memory leak due to wrong initialization of JAXB context has been fixed.
+    # I1706151280	[Interactive Channels API] [ICAPI-632] Added the ability to translate errors by server *.po files with special message keys. The format of the message keys consists of two parts, first part is error_resp_code_ prefix and the other part is error code (for example error_resp_code_40001)
+    # I1707134286	[Interactive Channels API] [ICAPI-663] Amount format in application and in pdf receipt is now the same and depends on client's application language.
+    # ICAPI-665	[Interactive Channels API] Transaction details for invoices are now displayed correctly.
+    # ICAPI-669	[Interactive Channels API] Foreign cards: now contract list handbook filtration by columns is not applied to foreign cards.
+    # I1707200690	[Interactive Channels API] [ICAPI-675] A request to several account banking systems now raises an error if these systems support multi-type requests, the client has an identifier in only one of these systems and the request to this system fails. 
+      In other cases, when a request is sent to several systems and some of the requests fail, an empty contract list is returned.
+    # ICAPI-678	[Interactive Channels API] Add customization point for error "beneficiary not found" P2P
+    # ICAPI-695	[Interactive Channels API] 3D Secure payments: XID format has been fixed. Now it is passed in hex format in UFX messages.
+    # ICAPI-696	[Interactive Channels API] External biller payments are inserted into menu items according to the Sequence Number set in the Screen Item for this external biller.
+    # ICAPI-708	[Interactive Channels API] On checking a one-time password it is now verified that confirmationKey was previously sent to the user who is performing the current operation.
+    # ICAPI-712	[Interactive Channels API] Extended contact information configuration with a flag to indicate whether the corresponding fields can be edited. Set this flag to false to prevent editing of contact information fields that cannot be changed via the web interface.
+    # ICAPI-714	[Interactive Channels API] Error code description received from biller is returned now by REST server for unsuccessful invoice requests.
+    # ICAPI-719	[Interactive Channels API] Now subscription total amount includes amount for all invoices
+    # ICAPI-727	[Interactive Channels API] Supported a new field, "encryptedPassword": now it is possible to pass encrypted passwords through mailers.json config.
+    # ICAPI-785	[Interactive Channels API] Fixed issue when it was possible to use an authentication method that was not allowed. Now during confirmation of an operation, when selecting the authentication type a check is made that this authentication type is present in the allowed authentication type list for the current operation.
+    # ICAPI-786	[Interactive Channels API] Fixed issue. Now during confirmation of an operation, when selecting the authentication type a check is made that the selected deviceId belongs to the user.
+    # ICAPI-787	[Interactive Channels API] Added cache for billers data. Cached data lives 300 seconds by default.
+    # ICAPI-792	[Interactive Channels API] Fixed issue. Substitution of attribute values in otp_sms template for services with WF Type="Application" is now correctly handled when executing via REST API.  The resource /payments/{serviceId}/pay is no longer supported.
+    # ICAPI-796	[Interactive Channels API] Multi-currency cards: restored missing information in operation details for the P2P_ONUS service.
+    # ICAPI-801	[Interactive Channels API] Fixed issue with incorrect "Day to pay" field value in instalments summary.
+    # ICAPI-802	[Interactive Channels API] SMS templates: added a new parameter, send_otp_sms_by_w4c with a default value of "true". This parameter specifies whether an OTP confirmation message will be sent by WAY4 Cards. The value of the parameter should be set to "false" if OTPs must be sent by another system.
+    # ICAPI-803	[Interactive Channels API] Added the ability to translate the receipt_contract property in pdf receipts.
+    # ICAPI-804	[Interactive Channels API] Supported autocomplete for billers CUSTOM_IDT attribute.
+    # I1710025748	[Interactive Channels API] [ICAPI-806] Corrected external system exceptions handling for recurring payments execution.
+    # ICAPI-808	[Interactive Channels API] Corrected contract definition for interest for cases with different systems for interest contract and deposit.
+    # ICAPI-817	[Interactive Channels API] Fixed handling of situations with expired one-time passwords.
+    # ICAPI-821	[Interactive Channels API] Fixed issue with login confirmation configuration. As before, confirmation for OTP MMA login is skipped if OTP MMA is configured as login confirmation. But for other login types, OTP MMA confirmation is filtered by the oneTimePassword feature on back-end, enabled only in Web Banking. Therefore, the confirmation selection screen will not appear now if only one confirmation case is available.
+    # ICAPI-829	[Interactive Channels API] Supported insertion of a masked card number as the CARD_NUMBER parameter or the last four digits of the card number as the CARD_NUMBER:last4 parameter in the OTP_SMS template for native blocking/unblocking of the card.
+    # ICAPI-838	[Interactive Channels API] Added a new status with the "expired" value.
+      This status is returned for cash code operations when cash code is expired.
+    # ICAPI-839	[Interactive Channels API] Fixed an error when instalments information was requested for additional cards and their unavailable parent contracts.
+    # ICAPI-843	[Interactive Channels API] Fixed calculation of next and overdue portion for instalments.
+    # ICAPI-844	[Interactive Channels API] Fixed display of monthly fee for instalments for which all payments are already paid or overdue. For such instalments, the monthly fee is shown as zero.
+    # I1802090456	[Interactive Channels API] [ICAPI-876] Corrected behaviour: when there are duplicate aliases for a contract, ICAPI will select one of them and won't fail.
+    # ICAPI-886	[Interactive Channels API] Added merchant and location information to operation pdf receipt.
+    # ICAPI-897	[Interactive Channels API] Supported PAYMENT_CODE attribute calculation for REST implementation of invoices.
+    # ICAPI-946	[Interactive Channels API] Added error handler  for city+ payments from templates.
+    * ICAPI-865	[Interactive Channels API] Supported "STORED" transaction condition for all transactions related to stored foreign cards.
+  [2.8.642]
+    % SMSB-405	[SMS banking] Added the ability to configure WAY4U SMS Banking to use intralink adapter instead of intranet adapter.
+  [2.8.611]
+    % SMSB-399	[SMS banking] Sensitive SMS Gateway: timeout of request processing is configurable with a default value of 40 seconds.
+  [2.8.585]
+    # I1704056640	[SMS banking] [SMSB-396] A new algorithm for parsing SMSC Delivery Receipt has been introduced. The SMPP specification states the format of delivery receipt is SMSC vendor specific. The new parsing algorithm is applicable only when a colon ":" is used as a separator of fields and values in a delivery receipt. It can be enabled in ows-application.properties by setting the parameter: delivery_short_message_parse_method=colon_separated
+
